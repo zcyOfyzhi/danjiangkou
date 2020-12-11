@@ -5,6 +5,8 @@
 # Xcode
 #
 build/
+ios/
+android/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -40,6 +42,7 @@ yarn-error.log
 buck-out/
 \.buckd/
 *.keystore
+node_modules.zip
 
 # fastlane
 #
