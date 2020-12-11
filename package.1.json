@@ -1,0 +1,49 @@
+{
+    "name": "djkv2",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node --max_old_space_size=8192 node_modules/react-native/local-cli/cli.js start",
+        "test": "jest",
+        "a": "react-native run-android"
+    },
+    "dependencies": {
+        "babel-plugin-inline-import": "^3.0.0",
+        "mobx": "^4.3.1",
+        "mobx-react": "^5.1.0",
+        "moment": "^2.29.0",
+        "prop-types": "^15.6.0",
+        "react": "16.2.0",
+        "react-native": "0.52.3",
+        "react-native-amap-geolocation": "^0.3.2",
+        "react-native-amap3d": "^1.0.0",
+        "react-native-audio": "^4.1.3",
+        "react-native-drawer": "^2.5.1",
+        "react-native-fetch-blob": "^0.10.8",
+        "react-native-fs": "^2.11.17",
+        "react-native-image-picker": "^0.27.0",
+        "react-native-image-viewer": "0.0.3",
+        "react-native-image-zoom-viewer": "^3.0.1",
+        "react-native-linear-gradient": "^2.4.0",
+        "react-native-sound": "^0.11.0",
+        "react-native-svg": "^6.1.1",
+        "react-native-svg-uri": "^1.2.3",
+        "react-native-swipe-list-view": "^3.2.3",
+        "react-native-vector-icons": "^4.4.3",
+        "react-native-view-overflow": "0.0.5",
+        "react-navigation": "^1.5.10",
+        "turf": "^3.0.14",
+        "victory-native": "^30.0.0"
+    },
+    "devDependencies": {
+        "babel-jest": "26.1.0",
+        "babel-plugin-transform-decorators-legacy": "^1.3.5",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-preset-react-native": "4.0.1",
+        "jest": "26.1.0",
+        "react-test-renderer": "16.2.0"
+    },
+    "jest": {
+        "preset": "react-native"
+    }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="图标" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-437.000000, -22.000000)" fill="#FFFFFF" id="navigation-menu">
+            <g transform="translate(437.000000, 22.000000)">
+                <rect id="Rectangle" x="3.375" y="5.375" width="17.25" height="2.25" rx="1"></rect>
+                <rect id="Rectangle" x="3.375" y="10.625" width="17.25" height="2.25" rx="1"></rect>
+                <rect id="Rectangle" x="3.375" y="15.875" width="17.25" height="2.25" rx="1"></rect>
+            </g>
+        </g>
+    </g>
+</svg>
