@@ -17,7 +17,7 @@ import ReserColumn from './reserColumn/index.js';
 import WaterSupply from './waterSupply/index.js';
 import DamInfo from './dam/index.js';
 import ImageVision from './imageVision/index.js';
-import Video from './video/index.js';
+// import Video from './video/index.js';
 import NewsInfo from './newsInfo/index.js';
 import HeadButton from '../../common/HeadButton';
 import SlideMenu from '../../common/slideMenu';
@@ -195,9 +195,9 @@ export default class About extends Component {
             <ImageVision></ImageVision>
           </View>
 
-          <View>
+          {/* <View>
             <Video></Video>
-          </View>
+          </View> */}
 
           <View>
             <NewsInfo></NewsInfo>
