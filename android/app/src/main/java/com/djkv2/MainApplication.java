@@ -49,7 +49,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNFetchBlobPackage(),
             new ReactNativeAudioPackage(),
             new AMap3DPackage(),
-            new AMapGeolocationPackage(),
+            new AMapGeolocationPackage()
             //new ReactVideoPackage()
             //new MPAndroidChartPackage()
       );
