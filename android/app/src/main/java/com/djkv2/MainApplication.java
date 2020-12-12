@@ -25,7 +25,7 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
-import com.brentvatne.react.ReactVideoPackage;
+//import com.brentvatne.react.ReactVideoPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -50,7 +50,7 @@ public class MainApplication extends Application implements ReactApplication {
             new ReactNativeAudioPackage(),
             new AMap3DPackage(),
             new AMapGeolocationPackage(),
-            new ReactVideoPackage()
+            //new ReactVideoPackage()
             //new MPAndroidChartPackage()
       );
     }

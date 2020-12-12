@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { ButtonView, TextView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
-import Video from 'react-native-video';
+//import Video from 'react-native-video';
 const { width } = Dimensions.get(`window`);
 import ImageView from "../../../common/ImageView";
 import Service from '../../../base/Service';
