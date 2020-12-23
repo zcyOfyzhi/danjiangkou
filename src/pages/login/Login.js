@@ -10,21 +10,24 @@ import {
   StyleSheet,
   AsyncStorage,
   Dimensions, Keyboard, ImageBackground, BackHandler,
+  TextInput,
+  KeyboardAvoidingView
 } from 'react-native';
 import { NavigationActions, StackActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
-//import Toast from 'teaset/components/Toast/Toast';
+import Toast from 'teaset/components/Toast/Toast';
 import PropTypes from 'prop-types';
 import {
-  SetStatusBar, ButtonView, Dialog, Paper, Input, TextView,
+  SetStatusBar, ButtonView, Paper, Input, TextView,
 } from '@rich/react-native-richway-component/index';
 import BaseStyle from '../../css/BaseStyle';
-//import HttpUtils from '../../common/HttpUtils';
-//import Service from '../../base/Service';
+import HttpUtils from '../../common/HttpUtils';
+import Service from '../../base/Service';
 import Logo from '../../image/17.png';
 import Background from '../../image/16.png';
 import NavigationService from '../../script/NavigationService';
 const { width,height } = Dimensions.get('window');
+import store from '../../richwayStore';
 const styles = StyleSheet.create({
   backgroundView: {
     alignItems: 'center',
@@ -135,8 +138,33 @@ export default class Login  extends React.Component {
 
     // 登录，请求服务器
     login = () => {
-      NavigationService.navigate("ComprehensiveAnalysis", {});
-      
+      const { loginName, loginPassword } = this.state;
+      if (!loginName) {
+        Toast.message('手机号码不能为空', 2500);
+        return;
+      }
+
+      if(loginName.length != 11){
+        Toast.message('手机号码长度为11位', 2500);
+        return;
+      }
+      if (loginPassword.length < 6) {
+        Toast.message('密码长度不能低于6位', 2500);
+        return;
+      }
+
+      let params = {
+        phone : loginName,
+        password : loginPassword
+      };
+
+      HttpUtils.get(Service.login,params).then((res) => {
+        console.log(res);
+        store.token.setToken(res.data.accessToken);
+        NavigationService.navigate("ComprehensiveAnalysis", {});
+      }).catch((error) => {
+        Toast.message(error.message, 2500);
+      });
     }
 
     setData=(obj) => {
@@ -203,7 +231,9 @@ export default class Login  extends React.Component {
                   <Input
                     style={styles.accountAndPwdTextInput}
                     clearButtonMode="while-editing"
-                    placeholder="输入账号或邮箱"
+                    placeholder="输入手机号"
+                    keyboardType="numeric"
+                    maxLength={11}
                     onChangeText={(text) => {
                       this.setState({
                         loginName: text,

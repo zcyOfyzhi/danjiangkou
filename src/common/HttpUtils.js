@@ -3,7 +3,7 @@ import { LayerModal, Dialog } from '@rich/react-native-richway-component';
 import { NavigationActions, StackActions } from 'react-navigation';
 import { AsyncStorage } from 'react-native';
 import Service from '../base/Service';
-import store from '../store';
+import store from '../richwayStore';
 
 const HttpUtils = {};
 
