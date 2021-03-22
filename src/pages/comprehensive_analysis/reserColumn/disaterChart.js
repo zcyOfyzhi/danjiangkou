@@ -36,14 +36,45 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
+    static propTypes = {
+        dsList :PropTypes.array
+    }
+
+    static defaultProps = {
+        dsList : []
+    }
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            dataArr : []
+        };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {dsList} = nextProps;
+        this.initChartOption(dsList);
+    }
+
+    initChartOption = (arr) => {
+        let list = [];
+
+        arr.forEach((item,index) => {
+            list.push({
+                value: item.total,
+                name: item.name
+            });
+        });
+
+        this.setState({
+            dataArr : list
+        })
+
     }
 
    
     render() {
+        const { dataArr } = this.state;
         const option = {
             tooltip: {
                 trigger: 'item',
@@ -54,7 +85,7 @@ class Page extends Component {
             series: [{
                 name: '地灾比例图',
                 type: 'pie',
-                color: ['#409EFF', '#F5A623'],
+                color: ['#EB1954','#FFD64B','#409EFF'],
                 radius: ['50%', '80%'],
                 center: ['50%', '50%'],
                 avoidLabelOverlap: false,
@@ -69,14 +100,7 @@ class Page extends Component {
                       show: false
                     }
                 },
-                data: [{
-                    name : "稳定",
-                    value : 44
-                },
-                {
-                    name : "不稳定",
-                    value : 1
-                }]
+                data: dataArr
             }]
           };
         return (

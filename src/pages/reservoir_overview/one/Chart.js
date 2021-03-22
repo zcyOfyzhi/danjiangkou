@@ -36,6 +36,13 @@ const styles = StyleSheet.create({
 
 class Page extends Component {
     
+    static propTypes = {
+        dataList :PropTypes.array
+      }
+    
+    static defaultProps = {
+        dataList : []
+    }
 
     constructor(props) {
         super(props);
@@ -44,19 +51,12 @@ class Page extends Component {
         };
     }
 
-    componentDidMount() {
-        this.initChartOption();
+    componentWillReceiveProps(nextProps) {
+        const {dataList} = nextProps;
+        this.initChartOption(dataList);
     }
     
-    initChartOption = () => {
-        let _this = this;
-        let dataList = [
-            {value: 69,name: '无问题' },
-            {value: 12,name: '有问题'},
-            {value: 10,name: '待处理'},
-            {value: 9,name: '已处理'}
-        ];
-
+    initChartOption = (arr) => {
         let option = {
             tooltip: {
                 trigger: 'item',
@@ -82,7 +82,7 @@ class Page extends Component {
                       show: true
                     }
                 },
-                data: dataList
+                data: arr
             }]
         };
 

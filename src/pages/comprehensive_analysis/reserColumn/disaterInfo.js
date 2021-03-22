@@ -11,6 +11,7 @@ import BaseStyle from '../../../css/BaseStyle';
 import IconOne from '../../../image/4.png';
 import IconTwo from '../../../image/2.png';
 import DisaterChart from './disaterChart';
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,13 +92,37 @@ const styles = StyleSheet.create({
 
 export default class EarthquakeInfo extends Component {
 
+  static propTypes = {
+    dsList :PropTypes.array
+  }
+
+  static defaultProps = {
+    dsList : []
+  }
 
   constructor(props) {
     super(props);
+    this.state = {
+      dsList : [],
+      numOne : '',
+      numTwo : '',
+      numThree : '',
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {dsList} = nextProps;
+    this.setState({
+      dsList : dsList,
+      numOne : dsList[0].total,
+      numTwo : dsList[1].total,
+      numThree : dsList[2].total
+    });
   }
 
 
     render() {
+      const { numOne, numTwo,numThree,dsList} = this.state;
       return (
         <View style={styles.container}>
           
@@ -115,19 +140,31 @@ export default class EarthquakeInfo extends Component {
                   </View>
 
                   <View style={styles.itemBottom}>
-                     <TextView style={styles.number}>44</TextView>
+                     <TextView style={styles.number}>{numThree}</TextView>
                      <TextView style={styles.letter}>次</TextView>
                   </View>
                </View>
 
                <View style={styles.item}>
                   <View style={styles.itemTop}>
-                     <TextView style={[styles.circle, { backgroundColor: '#F5A623' }]}></TextView>
+                     <TextView style={[styles.circle, { backgroundColor: '#FFD64B' }]}></TextView>
+                     <TextView style={styles.text}>欠稳定</TextView>
+                  </View>
+
+                  <View style={styles.itemBottom}>
+                     <TextView style={styles.number}>{numTwo}</TextView>
+                     <TextView style={styles.letter}>次</TextView>
+                  </View>
+               </View>
+
+               <View style={styles.item}>
+                  <View style={styles.itemTop}>
+                     <TextView style={[styles.circle, { backgroundColor: '#EB1954' }]}></TextView>
                      <TextView style={styles.text}>不稳定</TextView>
                   </View>
 
                   <View style={styles.itemBottom}>
-                     <TextView style={styles.number}>1</TextView>
+                     <TextView style={styles.number}>{numOne}</TextView>
                      <TextView style={styles.letter}>次</TextView>
                   </View>
                </View>
@@ -136,7 +173,7 @@ export default class EarthquakeInfo extends Component {
             </View> 
 
             <View style={styles.right}>
-               <DisaterChart></DisaterChart>
+               <DisaterChart dsList={dsList}></DisaterChart>
             </View>   
               
           </View>

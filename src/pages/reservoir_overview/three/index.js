@@ -6,9 +6,11 @@ import {
   NativeModules,
   Image
 } from 'react-native';
-import { ButtonView, TextView } from '@rich/react-native-richway-component';
+import { ButtonView, TextView,StatusView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
 import Chart from './Chart.js';
+import HttpUtils from '../../../common/HttpUtils';
+import Service from '../../../base/Service';
 
 
 const styles = StyleSheet.create({
@@ -85,32 +87,43 @@ export default class Page extends Component {
 
     this.state = {
       color : ['#409EFF', '#FF5050', '#FFC30F', '#67C23A'],
-      dataList : [
-        {value: 69,name: '无问题' },
-        {value: 12,name: '有问题'},
-        {value: 10,name: '待处理'},
-        {value: 9,name: '已处理'}
-      ]
+      dataList : [],
+      total : ''
     }
   }
 
+  dealResData = (data) => {
+    this.setState({
+      total : data.instable,
+      dataList : data.list
+    });
+  }
+
+
 
     render() {
-      const {color,dataList} = this.state;
+      const {color,total,dataList} = this.state;
       return (
         <View style={styles.container}>
           <TextView style={styles.BgTitle}>地灾</TextView>
           <View style={styles.subTitle}>
-              <TextView style={{fontSize : 12,color : '#333'}}>2020年不稳定地灾总次数：14次</TextView>
+              <TextView style={{fontSize : 12,color : '#333'}}>2020年不稳定地灾总次数：{total}次</TextView>
           </View>
           
-          <View style={styles.main}>
-            <View style={styles.top}>
-              <Chart></Chart>
+          <StatusView
+            ref={(v) => {
+              this.custom = v;
+            }}
+            getData={params => HttpUtils.get(Service.GetReseDisasterData, params)}
+            callBack={this.dealResData}
+            errorFunc={() => this.setState({ enableButton: true })}
+          >
+            <View style={styles.main}>
+              <View style={styles.top}>
+                <Chart dataList={dataList}></Chart>
+              </View>
             </View>
-            
-
-          </View>
+          </StatusView>
 
         </View>
       );

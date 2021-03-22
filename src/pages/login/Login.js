@@ -161,6 +161,7 @@ export default class Login  extends React.Component {
       HttpUtils.get(Service.login,params).then((res) => {
         console.log(res);
         store.token.setToken(res.data.accessToken);
+        store.token.setUser(res.data);
         NavigationService.navigate("ComprehensiveAnalysis", {});
       }).catch((error) => {
         Toast.message(error.message, 2500);

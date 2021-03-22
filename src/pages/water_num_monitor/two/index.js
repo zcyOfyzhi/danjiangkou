@@ -6,7 +6,8 @@ import {
   NativeModules,
   Image,
   Dimensions,
-  Text
+  Text,
+  DeviceEventEmitter
 } from 'react-native';
 import { ButtonView, TextView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
@@ -102,11 +103,33 @@ export default class Page extends Component {
 
     this.state = {
       dataList : [
-        {name: '今日累计供水',value: 0.6,unit : '亿m³' },
-        {name: '当前闸前水位',value: 166,unit : 'm' },
-        {name: '当前闸后水位',value: 148,unit : 'm' }
+        {name: '今日累计供水',value: '--',unit : '亿m³' },
+        {name: '当前闸前水位',value: '--',unit : 'm' },
+        {name: '当前闸后水位',value: '--',unit : 'm' }
       ]
     }
+  }
+
+  componentDidMount(){
+    this.listener = DeviceEventEmitter.addListener('waterNumData', (data) => {
+        this.dataResData(data);
+    });
+  }
+
+  componentWillUnmount(){
+    this.listener.remove();
+  }
+
+  dataResData = (data) => {
+     let arr = [
+      {name: '今日累计供水',value: data.dayW,unit : '亿m³' },
+      {name: '当前闸前水位',value: data.downZ,unit : 'm' },
+      {name: '当前闸后水位',value: data.upZ,unit : 'm' }
+    ]
+
+    this.setState({
+      dataList : arr
+    });
   }
 
 

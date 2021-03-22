@@ -6,7 +6,7 @@ import {
   NativeModules,
   Image
 } from 'react-native';
-import { ButtonView, TextView } from '@rich/react-native-richway-component';
+import { ButtonView, TextView,StatusView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
 import IconOne from '../../../image/1.png';
 import IconTwo from '../../../image/2.png';
@@ -14,6 +14,8 @@ import EarthquakeInfo from './earthquakeInfo.js';
 import DisaterInfo from './disaterInfo.js';
 import BoundaryInfo from './boundaryInfo.js';
 import FishInfo from './fishInfo.js';
+import HttpUtils from '../../../common/HttpUtils';
+import Service from '../../../base/Service';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,14 +78,41 @@ export default class ReserColumn extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      numOne : '',
+      numTwo : '',
+      dzList : [],
+      dsList : [],
+      jzList : []
+      
+    }
+  }
+  
+  dealResData = (data) => {
+    this.setState({
+      numOne : data.xjList[0].total,
+      numTwo : data.xjList[1].total,
+      dzList : data.dzList,
+      dsList : data.dsList,
+      jzList : data.jzList
+    })
   }
 
-
     render() {
+      const { numOne,numTwo,dzList,dsList,jzList } = this.state;
       return (
         <View style={styles.container}>
           <TextView style={styles.BgTitle}>库区管理</TextView>
 
+          <StatusView
+              ref={(v) => {
+                this.custom = v;
+              }}
+              getData={params => HttpUtils.get(Service.GetMonitorRese, params)}
+              callBack={this.dealResData}
+              errorFunc={() => this.setState({ enableButton: true })}
+            >
+             
           <View style={styles.titleInfo}>
             
             <View style={[styles.titleInfoItem, { marginRight: 20 }]}>
@@ -93,7 +122,7 @@ export default class ReserColumn extends Component {
                 </View>
 
                 <View>
-                  <TextView style={styles.color2}>12</TextView>
+                  <TextView style={styles.color2}>{numOne}</TextView>
                 </View>
             </View>
 
@@ -104,22 +133,22 @@ export default class ReserColumn extends Component {
               </View>
 
               <View>
-                <TextView style={styles.color2}>9</TextView>
+                <TextView style={styles.color2}>{numOne}</TextView>
               </View>
           </View>
 
           </View>
 
           <View>
-             <EarthquakeInfo></EarthquakeInfo>
+             <EarthquakeInfo dzList={dzList}></EarthquakeInfo>
           </View>
 
           <View>
-             <DisaterInfo></DisaterInfo>
+             <DisaterInfo dsList={dsList}></DisaterInfo>
           </View>
 
            <View>
-            <BoundaryInfo></BoundaryInfo>
+            <BoundaryInfo jzList={jzList}></BoundaryInfo>
           </View> 
 
            <View>
@@ -128,7 +157,7 @@ export default class ReserColumn extends Component {
 
           
 
-
+        </StatusView>
         </View>
       );
     }

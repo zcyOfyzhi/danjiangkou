@@ -11,7 +11,7 @@ import {
   Image,
   Button
 } from 'react-native';
-import { ButtonView, TextView } from '@rich/react-native-richway-component';
+import { ButtonView, TextView ,StatusView} from '@rich/react-native-richway-component';
 import BaseStyle from '../../css/BaseStyle';
 import ReserColumn from './reserColumn/index.js';
 import WaterSupply from './waterSupply/index.js';
@@ -26,6 +26,9 @@ const window = Dimensions.get('window');
 const screenHeight =  window.height;
 import TitleBar from "../../components/TitleBar";
 import Icon from 'react-native-vector-icons/Ionicons';
+import HttpUtils from '../../common/HttpUtils';
+import Service from '../../base/Service';
+import Utils from '../../common/utils';
 
 const styles = StyleSheet.create({
   container: {
@@ -138,6 +141,9 @@ export default class About extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      dataObj : {}
+    }
   }
   
   componentDidMount() {
@@ -153,8 +159,19 @@ export default class About extends Component {
     this._slideModal.close();
   }
 
+  dealResData = (data) => {
+    this.setState({
+      dataObj : data
+    })
+  }
+  
+  formatWaterLevel = (code) => {
+    return Utils.formatWaterQualityLevel(code);
+  }
 
     render() {
+      const { dataObj } = this.state;
+
       return (
         <View style={[styles.container]}>
         
@@ -162,22 +179,33 @@ export default class About extends Component {
             style={styles.flex}
             scrollEnabled={true}
         >
+        <StatusView
+              ref={(v) => {
+                this.custom = v;
+              }}
+              getData={params => HttpUtils.get(Service.GetWatersupIndexForHomepage, params)}
+              callBack={this.dealResData}
+              errorFunc={() => this.setState({ enableButton: true })}
+            >
+
           <View style={styles.top}>
-             <View style={styles.topItem}>
-                <TextView style={styles.colorOne}>供水量(亿m³)</TextView>
-                <TextView style={styles.colorTwo}>100.5</TextView>
-             </View>
+         
+              <View style={styles.topItem}>
+                  <TextView style={styles.colorOne}>总累计供水量(亿m³)</TextView>
+                  <TextView style={styles.colorTwo}>{dataObj.totalRealSup}</TextView>
+              </View>
 
-             <View style={styles.topItem}>
-                <TextView style={styles.colorOne}>库水位(m)</TextView>
-                <TextView style={styles.colorTwo}>168.8</TextView>
-             </View>
+              <View style={styles.topItem}>
+                  <TextView style={styles.colorOne}>库水位(m)</TextView>
+                  <TextView style={styles.colorTwo}>{dataObj.rz}</TextView>
+              </View>
 
-             <View style={styles.topItem}>
-                <TextView style={styles.colorOne}>水质(类)</TextView>
-                <TextView style={styles.colorTwo}>II</TextView>
-             </View>
+              <View style={styles.topItem}>
+                  <TextView style={styles.colorOne}>陶岔水质</TextView>
+                  <TextView style={styles.colorTwo}>{this.formatWaterLevel(dataObj.generalAssort)}</TextView>
+              </View>
           </View>
+          </StatusView>
           
           <View>
               <ReserColumn></ReserColumn>
@@ -199,9 +227,9 @@ export default class About extends Component {
             <Video></Video>
           </View> */}
 
-          <View>
+          {/* <View>
             <NewsInfo></NewsInfo>
-          </View>
+          </View> */}
 
           </ScrollView>
 

@@ -54,3 +54,6 @@ node_modules.zip
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+
+
+*.zip

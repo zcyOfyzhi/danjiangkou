@@ -5,7 +5,6 @@ import {
     View
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { BarChart } from 'react-native-charts-wrapper';
 import { TextView } from '@rich/react-native-richway-component';
 import Echarts from 'native-echarts';
 
@@ -20,7 +19,14 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
-    color = [`#3385FF`,`#F5A623`];
+    static propTypes = {
+        dataList :PropTypes.array
+      }
+    
+    static defaultProps = {
+        dataList : []
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -28,13 +34,27 @@ class Page extends Component {
         };
     }
 
-    componentDidMount() {
-        this.initChartOption();
+    componentWillReceiveProps(nextProps) {
+        const {dataList} = nextProps;
+        this.initChartOption(dataList);
     }
 
-    initChartOption = () => {
+    initChartOption = (arr) => {
+        let tmArr = [];
+        let dataOne = [];
+        let dataTwo = [];
+        
+        arr.forEach((item,index) => {
+            tmArr.push(`${item.year}年${item.month}月`);
+            dataOne.push(item.monthlyResponseSup);
+            dataTwo.push(item.monthlyTotalSup);
+            
+        });
       let option = {
         color: ['#409EFF', '#E6A23C'],
+        legend: {
+            data: ['月批复供水量','月实际供水量']
+        },
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -50,7 +70,7 @@ class Page extends Component {
         },
         xAxis: [{
             type: 'category',
-            data: ['2020年6月','2020年7月','2020年8月','2020年9月'],
+            data: tmArr,
             axisTick: {
                 alignWithLabel: true
             }
@@ -67,14 +87,14 @@ class Page extends Component {
                 type: 'bar',
                 barGap: '0%',
                 barWidth : '30%',
-                data: [10,11,12,10]
+                data:dataOne
             },
             {
                 name: '月实际供水量',
                 type: 'bar',
                 barGap: '0%',
                 barWidth : '30%',
-                data: [8,10,12,9]
+                data: dataTwo
             }
         ]
       };

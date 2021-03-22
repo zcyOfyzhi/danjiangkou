@@ -22,6 +22,7 @@ import TopInfo from './topInfo.js';
 import DeviceStatus from './deviceStatus.js';
 import DeviceType from './deviceType.js';
 import WarnStatus from './warnStatus.js';
+import DamInfo from './dam/index.js';
 
 const styles = StyleSheet.create({
   container: {
@@ -159,6 +160,10 @@ export default class About extends Component {
             </View>
 
             <View>
+              <DamInfo></DamInfo>
+            </View>
+
+            {/* <View>
               <DeviceStatus></DeviceStatus>
             </View>
 
@@ -168,7 +173,7 @@ export default class About extends Component {
             
             <View>
               <WarnStatus></WarnStatus>
-            </View>
+            </View> */}
           </ScrollView>
 
           <SlideModal

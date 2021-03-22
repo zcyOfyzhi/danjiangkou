@@ -7,9 +7,11 @@ import {
   Image,
   Dimensions
 } from 'react-native';
-import { ButtonView, TextView } from '@rich/react-native-richway-component';
+import { ButtonView, TextView,StatusView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
 import Chart from './Chart.js';
+import HttpUtils from '../../../common/HttpUtils';
+import Service from '../../../base/Service';
 
 const { width,height } = Dimensions.get('window');
 
@@ -105,20 +107,7 @@ export default class Page extends Component {
 
     this.state = {
       color : ['#5B8FF9', '#5AD8A6', '#5D7092', '#F6BD16','#E8684A', '#6DC8EC', '#9270CA', '#FF9D4D','#269A99','#FF99C3','#5B8FF9','#BDD2FD'],
-      dataList : [
-        {value: 20,name: '细鳞斜颌鲴' },
-        {value: 20,name: '黄颡鱼'},
-        {value: 136,name: '团头鲂'},
-        {value: 7,name: '银鲴'},
-        {value: 16,name: '中华倒刺鲃' },
-        {value: 2,name: '未知鱼种0'},
-        {value: 30,name: '鳙'},
-        {value: 1,name: '未知鱼种2'},
-        {value: 9,name: '青鱼' },
-        {value: 16,name: '鲢'},
-        {value: 118,name: '长春鳊'},
-        {value: 14,name: '草鱼'}
-      ],
+      dataList : [],
       dataListTwo : [
         {name: '配对',value: 19,unit : '对' },
         {name: '产生苗种',value: 30,unit : '批' },
@@ -129,7 +118,12 @@ export default class Page extends Component {
       ]
     }
   }
-
+   
+  dealResData = (data) => {
+    this.setState({
+      dataList : data
+    });
+  }
 
     render() {
       const {color,dataList,dataListTwo} = this.state;
@@ -150,17 +144,27 @@ export default class Page extends Component {
                               <TextView style={{color : '#999999',fontSize : 10,marginTop : 20}} >{item.unit}</TextView>
                           </View>
 
-                         
 
                        </View>
                       ))
                 }
 
             </View>
+
+            
           
+            <StatusView
+                ref={(v) => {
+                  this.custom = v;
+                }}
+                getData={params => HttpUtils.get(Service.GetFishReleaseGettotal, params)}
+                callBack={this.dealResData}
+                errorFunc={() => this.setState({ enableButton: true })}
+            >
+
           <View style={styles.main}>
             <View style={styles.top}>
-              <Chart></Chart>
+              <Chart dataList={dataList}></Chart>
             </View>
 
             <View style={styles.bottom}>
@@ -169,10 +173,10 @@ export default class Page extends Component {
                        <View style={styles.item} key={`item_${index}`}>
                           <View style={styles.itemLeft}>
                               <TextView style={[styles.circle, { backgroundColor: `${color[index]}` }]}></TextView>
-                              <TextView>{item.name}</TextView>
+                              <TextView>{item.fishName}</TextView>
                           </View>
 
-                          <TextView style={styles.itemRight}>{item.value}</TextView>
+                          <TextView style={styles.itemRight}>{item.fishTotal}</TextView>
 
                        </View>
                       ))
@@ -181,6 +185,8 @@ export default class Page extends Component {
             
 
           </View>
+
+          </StatusView>
 
         </View>
       );

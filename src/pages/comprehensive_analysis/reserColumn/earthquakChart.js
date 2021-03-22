@@ -36,19 +36,54 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
+    static propTypes = {
+        dzList :PropTypes.array
+      }
+    
+    static defaultProps = {
+    dzList : []
+    }
+
     constructor(props) {
         super(props);
         this.state = {
-            chartOption : {}
+            chartOption : {},
+            dataArr : [],
+            total : 0
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        const {dzList} = nextProps;
+        this.initChartOption(dzList);
+    }
+    
     componentDidMount() {
+    }
+
+    initChartOption = (arr) => {
+        let list = [];
+        let num = 0;
+
+        arr.forEach((item,index) => {
+            num += item.total;
+            list.push({
+                value: item.total,
+                name: item.name
+            });
+        });
+
+        this.setState({
+            dataArr : list,
+            total : num
+        })
+
     }
 
     
    
     render() {
+        const { dataArr,total } = this.state;
         const option = {
             tooltip: {
                 trigger: 'item',
@@ -59,7 +94,7 @@ class Page extends Component {
             series: [{
                 name: '地震比例图',
                 type: 'pie',
-                color: ['#409EFF', '#FFD64B', '#16EFB7'],
+                color: ['#409EFF', '#33FFD1', '#F8E71C','#EB1954'],
                 radius: ['50%', '80%'],
                 center: ['50%', '50%'],
                 avoidLabelOverlap: false,
@@ -74,18 +109,7 @@ class Page extends Component {
                       show: false
                     }
                 },
-                data: [{
-                    name : "M < 1.0级",
-                    value : 6
-                },
-                {
-                    name : "M1.0~1.9",
-                    value : 4
-                },
-                {
-                    name : "M > 2.0",
-                    value : 1
-                }]
+                data: dataArr
             }]
           };
         return (

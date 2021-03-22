@@ -1,12 +1,16 @@
 import React, {Component} from 'react';
 import {
-    View, StyleSheet, FlatList
+    View, 
+    StyleSheet, 
+    FlatList,
+    DeviceEventEmitter
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
 import { ButtonView, TextView } from '@rich/react-native-richway-component/index';
 import moment from 'moment';
 import BaseStyle from '../../../css/BaseStyle';
+import Utils from '../../../common/utils';
 
 const styles = StyleSheet.create({
     container: {
@@ -57,65 +61,42 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
-    static propTypes = {
-        navigation: PropTypes.object,
-        data: PropTypes.array
-    }
-    static defaultProps = {
-        data: [
-            {
-                id : 1,
-                stnm : '站点1',
-                cLevel : 'III类',
-                tm : '2020.4.16 18:46',
-                tLevel : 'I类'
-            },
-            {
-                id : 2,
-                stnm : '站点2',
-                cLevel : 'III类',
-                tm : '2020.4.16 18:46',
-                tLevel : 'I类'
-            },
-            {
-                id : 3,
-                stnm : '站点3',
-                cLevel : 'III类',
-                tm : '2020.4.16 18:46',
-                tLevel : 'I类'
-            },
-            {
-                id : 4,
-                stnm : '站点4',
-                cLevel : 'III类',
-                tm : '2020.4.16 18:46',
-                tLevel : 'I类'
+    constructor(props) {
+        super(props);
+        this.state = {
+            data : [],
+            title: {
+                stnm: `站名`,
+                cLevel: `当前水质`,
+                tm: `时间`,
+                tLevel: `目标水质`
             }
-        ],
-        navigation: {},
+        };
     }
-
-    state = {
-        title: {
-            stnm: `站名`,
-            cLevel: `当前水质`,
-            tm: `时间`,
-            tLevel: `目标水质`
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        const {data} = nextProps;
-        this.setState({
-            data
+    
+    componentDidMount(){
+        this.waterQualityListener = DeviceEventEmitter.addListener('waterQualityTableData', (data) => {
+            this.setState({
+               data : data
+           });
         });
-    }
+      }
+    
+      componentWillUnmount(){
+        this.waterQualityListener.remove();
+      }
 
     renderItem = ({item}) => {
         const element = this.setItem(item,false);
         return element;
     }
-
+    
+    formatWaterLevel = (code,isHeader) => {
+        if(isHeader){
+           return code;
+        }
+        return Utils.formatWaterQualityLevel(code);
+      }
   
 
     setItem = (item,isHeader) => {
@@ -136,7 +117,7 @@ class Page extends Component {
                     </View>
 
                     <View style={styles.item}>
-                        <TextView>{item.cLevel}</TextView>
+                        <TextView>{this.formatWaterLevel(item.assort,isHeader)}</TextView>
                     </View>
                     
                     <View style={styles.itemTm}>
@@ -144,7 +125,7 @@ class Page extends Component {
                     </View>
 
                     <View style={styles.item}>
-                        <TextView>{item.tLevel}</TextView>
+                        <TextView>{this.formatWaterLevel(item.aimWqg,isHeader)}</TextView>
                     </View>
                 </ButtonView>
             </View>

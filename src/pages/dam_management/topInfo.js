@@ -89,7 +89,7 @@ export default class ReserColumn extends Component {
                 </View>
 
                 <View>
-                  <TextView style={styles.color2}>5</TextView>
+                  <TextView style={styles.color2}>0</TextView>
                 </View>
             </View>
 
@@ -100,7 +100,7 @@ export default class ReserColumn extends Component {
               </View>
 
               <View>
-                <TextView style={styles.color2}>4%</TextView>
+                <TextView style={styles.color2}>0%</TextView>
               </View>
           </View>
 

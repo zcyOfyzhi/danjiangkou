@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, processColor, View
+    StyleSheet, 
+    processColor, 
+    View,
+    DeviceEventEmitter
 } from 'react-native';
 import PropTypes from 'prop-types';
 import BaseStyle from '../../../css/BaseStyle';
@@ -33,20 +36,25 @@ const styles = StyleSheet.create({
         fontSize: 10
     }
 });
-
-class Page extends Component {
+export default class Page extends Component {
     constructor(props) {
         super(props);
         this.state = {
             chartOption : {}
         };
     }
-
-    componentDidMount() {
-        this.initChartOption();
+    
+    componentDidMount(){
+        this.chartTwolistener = DeviceEventEmitter.addListener('waterNumData', (data) => {
+            this.initChartOption(data.yearRealSup,data.yearPlanSup);
+        });
+    }
+    
+    componentWillUnmount(){
+    this.chartTwolistener.remove();
     }
 
-    initChartOption() {
+    initChartOption(num1,num2) {
         let option = {
            grid: {
               top : 0,
@@ -65,7 +73,7 @@ class Page extends Component {
               }
             },
             z: 10,
-            data: ['实际', '计划']
+            data: ['计划','实际']
           },
           yAxis: {
             type: 'value',
@@ -79,9 +87,27 @@ class Page extends Component {
   
           },
           series: [{
-            data: [{
+            data: [
+                {
+                    name: '计划',
+                    value: num2,
+                    itemStyle: {
+                        normal : {
+                            color: '#409EFF'
+                        }
+                    },
+                    label: {
+                        normal : {
+                            show: true,
+                            distance: 10,
+                            color: '#fff',
+                            position: 'insideBottom'
+                        }
+                    }
+                  },
+                {
                 name: '实际',
-                value: 6.2,
+                value: num1,
                 itemStyle: {
                     normal : {
                         color: '#FFC30F'
@@ -97,23 +123,7 @@ class Page extends Component {
   
                 }
               },
-              {
-                name: '实际',
-                value: 4.8,
-                itemStyle: {
-                    normal : {
-                        color: '#409EFF'
-                    }
-                },
-                label: {
-                    normal : {
-                        show: true,
-                        distance: 10,
-                        color: '#fff',
-                        position: 'insideBottom'
-                    }
-                }
-              }
+              
             ],
             barGap: 0,
             barCategoryGap: 0,
@@ -137,5 +147,3 @@ class Page extends Component {
         );
     }
 }
-
-export default Page;

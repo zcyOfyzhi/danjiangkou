@@ -36,11 +36,42 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
-    
+    static propTypes = {
+        jzList :PropTypes.array
+    }
+
+    static defaultProps = {
+        jzList : []
+    }
+
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            dataArr : []
+        };
     }
+
+    componentWillReceiveProps(nextProps) {
+        const {jzList} = nextProps;
+        this.initChartOption(jzList);
+    }
+
+    initChartOption = (arr) => {
+        let list = [];
+
+        arr.forEach((item,index) => {
+            list.push({
+                value: item.total,
+                name: item.name
+            });
+        });
+
+        this.setState({
+            dataArr : list
+        })
+
+    }
+
 
     componentDidMount() {
 
@@ -49,6 +80,7 @@ class Page extends Component {
 
     
     render() {
+        const { dataArr } = this.state;
         const option = {
             tooltip: {
                 trigger: 'item',
@@ -59,7 +91,7 @@ class Page extends Component {
             series: [{
                 name: '界桩比例图',
                 type: 'pie',
-                color: ['#409EFF', '#F5A623'],
+                color: ['#FFD64B','#409EFF'],
                 radius: ['50%', '80%'],
                 center: ['50%', '50%'],
                 avoidLabelOverlap: false,
@@ -74,14 +106,7 @@ class Page extends Component {
                       show: false
                     }
                 },
-                data: [{
-                    name : "正常",
-                    value : 17000
-                },
-                {
-                    name : "损坏",
-                    value : 1000
-                }]
+                data:dataArr
             }]
           };
         return (

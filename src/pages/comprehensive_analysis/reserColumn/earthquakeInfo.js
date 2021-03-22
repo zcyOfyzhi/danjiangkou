@@ -11,6 +11,7 @@ import BaseStyle from '../../../css/BaseStyle';
 import IconOne from '../../../image/3.png';
 import IconTwo from '../../../image/2.png';
 import EarthquakChart from './earthquakChart';
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   container: {
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     justifyContent : 'center'
   },
   right : {
-    width : '30%',
+    width : '20%',
   },
   number : {
     fontSize : 28,
@@ -90,14 +91,43 @@ const styles = StyleSheet.create({
 });
 
 export default class EarthquakeInfo extends Component {
+  static propTypes = {
+    dzList :PropTypes.array
+  }
 
+  static defaultProps = {
+    dzList : []
+  }
 
   constructor(props) {
     super(props);
+    this.state = {
+      dzList : [],
+      numOne : '',
+      numTwo : '',
+      numThree : '',
+      numFour : ''
+    }
   }
+
+  
+  componentWillReceiveProps(nextProps) {
+    const {dzList} = nextProps;
+    this.setState({
+      dzList : dzList,
+      numOne : dzList[0].total,
+      numTwo : dzList[1].total,
+      numThree : dzList[2].total,
+      numFour : dzList[3].total
+    });
+}
+
+
+ 
 
 
     render() {
+      const { numOne, numTwo,numThree,numFour,dzList} = this.state;
       return (
         <View style={styles.container}>
           
@@ -111,11 +141,11 @@ export default class EarthquakeInfo extends Component {
                <View style={styles.item}>
                   <View style={styles.itemTop}>
                      <TextView style={styles.circle}></TextView>
-                     <TextView style={styles.text}>M&lt;1.0</TextView>
+                     <TextView style={styles.text}>&lt;2.0级</TextView>
                   </View>
 
                   <View style={styles.itemBottom}>
-                     <TextView style={styles.number}>6</TextView>
+                     <TextView style={styles.number}>{numOne}</TextView>
                      <TextView style={styles.letter}>次</TextView>
                   </View>
                </View>
@@ -123,23 +153,35 @@ export default class EarthquakeInfo extends Component {
                <View style={styles.item}>
                   <View style={styles.itemTop}>
                      <TextView style={[styles.circle, { backgroundColor: '#33C9A7' }]}></TextView>
-                     <TextView style={styles.text}>M1.0~1.9</TextView>
+                     <TextView style={styles.text}>2.0~3.0</TextView>
                   </View>
 
                   <View style={styles.itemBottom}>
-                     <TextView style={styles.number}>4</TextView>
+                     <TextView style={styles.number}>{numTwo}</TextView>
                      <TextView style={styles.letter}>次</TextView>
                   </View>
                </View>
 
                <View style={styles.item}>
                   <View style={styles.itemTop}>
-                     <TextView style={[styles.circle, { backgroundColor: '#F5A623' }]}></TextView>
-                     <TextView style={styles.text}>M&gt;2.0</TextView>
+                     <TextView style={[styles.circle, { backgroundColor: '#F8E71C' }]}></TextView>
+                     <TextView style={styles.text}>3.0~4.0</TextView>
                   </View>
 
                   <View style={styles.itemBottom}>
-                     <TextView style={styles.number}>1</TextView>
+                     <TextView style={styles.number}>{numThree}</TextView>
+                     <TextView style={styles.letter}>次</TextView>
+                  </View>
+               </View>
+
+               <View style={styles.item}>
+                  <View style={styles.itemTop}>
+                     <TextView style={[styles.circle, { backgroundColor: '#EB1954' }]}></TextView>
+                     <TextView style={styles.text}>&ge;4.0</TextView>
+                  </View>
+
+                  <View style={styles.itemBottom}>
+                     <TextView style={styles.number}>{numFour}</TextView>
                      <TextView style={styles.letter}>次</TextView>
                   </View>
                </View>
@@ -147,7 +189,7 @@ export default class EarthquakeInfo extends Component {
             </View> 
 
             <View style={styles.right}>
-               <EarthquakChart></EarthquakChart>
+               <EarthquakChart dzList={dzList}></EarthquakChart>
             </View>   
               
           </View>

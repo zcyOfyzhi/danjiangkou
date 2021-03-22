@@ -18,6 +18,7 @@ import SlideMenu from '../../common/slideMenu';
 import { SlideModal } from 'beeshell';
 const window = Dimensions.get('window');
 const screenHeight =  window.height;
+import store from '../../richwayStore';
 
 const styles = StyleSheet.create({
   container: {
@@ -209,11 +210,11 @@ class Page extends Component {
               <Icon name="ios-person" size={45} color="#3385FF" />
             </View>
             <View style={styles.message}>
-              <TextView style={styles.name}>cmc</TextView>
+              <TextView style={styles.name}>{store.token.user.username}</TextView>
             </View>
           </View>
           
-          <View  style={styles.about}>
+          {/* <View  style={styles.about}>
               <View style={styles.aboutHeader}>
                   <Image
                     source={Icon1}
@@ -222,7 +223,7 @@ class Page extends Component {
                   <TextView style={{fontSize : 14}}>关于我们</TextView>
               </View>
               <TextView style={styles.aboutText}>本软件由专业水利工程开发，目前发布版本为V1.0.0公测版，计算和查询功能仍在不断的完善，如果您有更好的建议请通过意见反馈告诉我们。</TextView>
-          </View>
+          </View> */}
           </View>
           
           <View style={styles.bottom}>

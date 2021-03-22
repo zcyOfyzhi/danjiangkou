@@ -10,6 +10,7 @@ import { ButtonView, TextView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
 import IconOne from '../../../image/5.png';
 import BoundaryChart from './boundaryChart.js';
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   container: {
@@ -86,14 +87,35 @@ const styles = StyleSheet.create({
 });
 
 export default class EarthquakeInfo extends Component {
+  static propTypes = {
+    jzList :PropTypes.array
+  }
 
+  static defaultProps = {
+    jzList : []
+  }
 
   constructor(props) {
     super(props);
+    this.state = {
+      jzList : [],
+      numOne : '',
+      numTwo : ''
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {jzList} = nextProps;
+    this.setState({
+      jzList : jzList,
+      numOne : jzList[0].total,
+      numTwo : jzList[1].total
+    });
   }
 
 
     render() {
+      const { numOne, numTwo,jzList} = this.state;
       return (
         <View style={styles.container}>
           
@@ -111,7 +133,7 @@ export default class EarthquakeInfo extends Component {
                   </View>
 
                   <View style={styles.itemBottom}>
-                     <TextView style={styles.number}>17000</TextView>
+                     <TextView style={styles.number}>{numTwo}</TextView>
                      <TextView style={styles.letter}>个</TextView>
                   </View>
                </View>
@@ -123,7 +145,7 @@ export default class EarthquakeInfo extends Component {
                   </View>
 
                   <View style={styles.itemBottom}>
-                     <TextView style={styles.number}>1000</TextView>
+                     <TextView style={styles.number}>{numOne}</TextView>
                      <TextView style={styles.letter}>个</TextView>
                   </View>
                </View>
@@ -132,7 +154,7 @@ export default class EarthquakeInfo extends Component {
             </View> 
 
             <View style={styles.right}>
-               <BoundaryChart></BoundaryChart>
+               <BoundaryChart jzList={jzList}></BoundaryChart>
             </View>   
               
           </View>

@@ -6,18 +6,21 @@ import {
   NativeModules,
   Image,
   Dimensions,
-  Text
+  Text,
+  DeviceEventEmitter
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { ButtonView, TextView } from '@rich/react-native-richway-component';
+import { ButtonView, TextView,StatusView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
 import Circle from '../../../common/Circle.js';
 import moment from 'moment';
-import { Actionsheet} from 'beeshell';
+import { Actionsheet,BottomModal,Datepicker } from 'beeshell';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import ChartOne from './Chart1.js';
 import ChartTwo from './Chart2.js';
 const { width,height } = Dimensions.get('window');
+import HttpUtils from  '../../../common/HttpUtils';
+import Service from '../../../base/Service';
 
 
 
@@ -84,38 +87,64 @@ export default class Page extends Component {
     super(props);
 
     this.state = {
-      isDateTimePickerVisible: false,
-      date: new Date(),
-      start: moment().subtract(0, 'days').hour(0).minute(0).second(0).format('YYYY-MM-DD HH:mm:ss'),
+      numOne : '--',
+      numTwo : '--',
+      resData : {},
+      date: moment().subtract(0, 'days').format('YYYY-MM'),
+      start: moment().subtract(0, 'days').format('YYYY-MM-DD'),
+      showDate : moment().format('YYYY-MM')
     }
   }
    
 
 
-  btnOneClick = () => {
-    this._actionStSheet.open()
-  }
 
   btnTwoClick = () => {
-     const { isDateTimePickerVisible, start } = this.state;
-      this.setState({
-        isDateTimePickerVisible: !isDateTimePickerVisible,
-        time: 0,
-        date: new Date(moment(start)),
-      });
+    this.bottomModal1.open();
+  }
+   
+  getParams = () => {
+    let { date } = this.state;
+    let params = {
+      sectionCode : 'c2804ef8c90c81c57a932f82fe3a151b',
+      tm : moment(date).format('YYYY-MM')
+    }
+    return params;
   }
 
-  onConfirm = (dateTime) => {
-      this.setState({
-        isDateTimePickerVisible: false,
-        start: moment(dateTime).hour(0).minute(0)
-          .second(0)
-          .format('YYYY-MM-DD HH:mm:ss'),
+  dealResData = (data) => {
+     this.setState({
+      resData : data
+     });
+     this.getTopInfoData(data.monthRealSup,data.monthPlanSup);
+     DeviceEventEmitter.emit('waterNumData',data);
+  }
+
+  getTopInfoData = (num1,num2) => {
+    if(num1){
+      num1 = num1.toFixed(2);
+    }
+   if(num2){
+      num2 = num2.toFixed(2);
+    }
+
+    this.setState({
+      numOne : num1,
+      numTwo : num2
+    })
+  }
+  onConfirm = () => {
+    let { date } = this.state;
+      this.custom.reload({
+        sectionCode : 'c2804ef8c90c81c57a932f82fe3a151b',
+        tm : moment(date).format('YYYY-MM')
       });
   }
+  
+  
 
     render() {
-      const { isDateTimePickerVisible,date } = this.state;
+      const { isDateTimePickerVisible,date,start,numOne,numTwo,resData,showDate } = this.state;
       return (
         <View style={styles.container}>
           <View style={styles.top}>
@@ -123,22 +152,16 @@ export default class Page extends Component {
               <View style={styles.topRight}>
                   <ButtonView
                       style={styles.btnList}
-                      onPress={this.btnOneClick}
+                      onPress={() => {}}
                   >
-                    <TextView style={{color:'#89AADB',}}>请选择测站</TextView>
-                    <Icon
-                        name={'ios-arrow-down'}
-                        size={18}
-                        color={'#89AADB'}
-                        style={{marginLeft: 6,}}
-                      />
+                    <TextView style={{color:'#89AADB',}}>陶岔0+300</TextView>
                 </ButtonView>
 
                 <ButtonView
                   style={styles.btnList}
                   onPress={this.btnTwoClick}
                   >
-                    <TextView style={{color:'#89AADB',}}>请选择日期</TextView>
+                    <TextView style={{color:'#89AADB',}}>{showDate}</TextView>
                     <Icon
                         name={'ios-arrow-down'}
                         size={18}
@@ -149,7 +172,16 @@ export default class Page extends Component {
               </View>
           </View>
           
-          <TextView style={styles.subTitle}>当前供水量：6.1亿m³，月计划供水量：4.8亿m³，供水偏差超过20%</TextView>
+          <StatusView
+              ref={(v) => {
+                this.custom = v;
+              }}
+              getData={params => HttpUtils.get(Service.GetWaterSupplyMointorInfo, params)}
+              params={this.getParams()}
+              callBack={this.dealResData}
+              errorFunc={() => this.setState({ enableButton: true })}
+            >
+          <TextView style={styles.subTitle}>当月实际供水量：{numOne}亿m³，月计划供水量：{numTwo}亿m³</TextView>
           
 
           <View style={styles.main}>
@@ -168,49 +200,34 @@ export default class Page extends Component {
             </View>
           </View>
 
+          
+              </StatusView>
 
-          <Actionsheet
-                  ref={(c) => { this._actionStSheet = c; }}
-                  header='测站列表'
-                  maxShowNum = '4'
-                  data={[
-                    {
-                      label: '测站1',
-                      value: 'st1'
-                    },
-                    {
-                      label: '测站2',
-                      value: 'st2',
-                    },
-                    {
-                      label: '测站3',
-                      value: 'st3',
-                    },
-                    {
-                      label: '测站4',
-                      value: 'st4',
-                    }
-                  ]}
-                  cancelable={false}
-                  onPressConfirm={(item) => {
-                     console.log(item);
-                  }} 
-                  onPressCancel={() => {
-                    console.log('cancel')
-                  }}>
-            </Actionsheet>
-
-             <DateTimePicker
-                isVisible={isDateTimePickerVisible}
-                cancelTextIOS="取消"
-                confirmTextIOS="确定"
-                titleIOS="选择日期"
-                date={date}
-                onConfirm={this.onConfirm}
-                maximumDate={new Date()}
-                onCancel={() => this.setState({ isDateTimePickerVisible: false })}
-              />
-
+              <BottomModal
+                    ref={(c) => { this.bottomModal1 = c }}
+                    title='请选择日期'
+                    cancelable={true}
+                    rightCallback={() => {
+                      this.onConfirm();
+                    }}
+                    onClosed={() => {}}
+              >
+                <View style={{ paddingVertical: 15 }}>
+                  <Datepicker
+                    style={{ paddingHorizontal: 50 }}
+                    proportion={[1, 1, 1]}
+                    startYear={2010}
+                    numberOfYears={20}
+                    date={this.state.date}
+                    onChange={(date) => {
+                      this.setState({
+                        date: date,
+                        showDate : moment(date).format('YYYY-MM')
+                      })
+                    }}
+                  />
+                </View>
+            </BottomModal>
         </View>
       );
     }

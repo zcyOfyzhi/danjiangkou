@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, processColor, View
+    StyleSheet, 
+    processColor, 
+    View,
+    DeviceEventEmitter
 } from 'react-native';
 import PropTypes from 'prop-types';
 import BaseStyle from '../../../css/BaseStyle';
@@ -36,6 +39,15 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
+
+    static propTypes = {
+        resData :PropTypes.array
+      }
+    
+    static defaultProps = {
+        resData : []
+    }
+
     constructor(props) {
         super(props);
         this.state = {
@@ -43,11 +55,22 @@ class Page extends Component {
         };
     }
 
-    componentDidMount() {
-        this.initChartOption();
-    }
+    componentDidMount(){
+        this.chartFourlistener = DeviceEventEmitter.addListener('waterNumFourData', (data) => {
+            this.initChartOption(data);
+        });
+      }
+    
+      componentWillUnmount(){
+        this.chartFourlistener.remove();
+      }
 
-    initChartOption = () => {
+    initChartOption = (arr) => {
+        let yArr = [];
+        arr.forEach(item => {
+          yArr.push(item.value);
+        });
+         
         let option = {
             tooltip: {
               trigger: 'axis',
@@ -60,110 +83,60 @@ class Page extends Component {
             },
             grid: {
                 top : 30,
-                left: 10,
+                left:30,
                 right: 10,
                 bottom: 60,
                 containLabel: true
             },
-            legend: {
-              data: ['水量', '流量', '调令流量']
-            },
             xAxis: [{
               type: 'category',
-              data: ['12月1日','12月2日','12月3日','12月4日','12月5日'],
+              data: ['11月','12月','01月','02月','03月','04月','05月','06月','07月','08月','09月','10月'],
               axisPointer: {
                 type: 'shadow'
               },
               splitLine: {
-                show : false
+                show : true
               },
               axisLine: {
                   lineStyle: {
-                      normal : {
-                        type: 'solid',
-                        color: `rgba(255, 255, 255, .5)`,
-                        width:'1'
-                      }
-                      
+                      type: 'solid',
+                      width:'1'
                   }
               },
               
             }],
-            yAxis: [{
+            yAxis: [
+              {
                 type: 'value',
-                name: '水量m³',
                 splitLine: {
-                   show : true,
+                   show : false,
                    lineStyle: {
-                      color: `rgba(255, 255, 255, .15)`
+                      color: `#000`,
                   }
                 },
                 axisLine: {
                   lineStyle: {
                       type: 'solid',
-                      color: `rgba(255, 255, 255, .5)`,
                       width:'1'
                   }
               },
                 
     
               },
-              {
-                type: 'value',
-                name: '流量m³/s',
-                splitLine: {
-                   show : true,
-                   lineStyle: {
-                      color: `rgba(255, 255, 255, .15)`
-                  }
-                },
-                axisLine: {
-                  lineStyle: {
-                      type: 'solid',
-                      color: `rgba(255, 255, 255, .5)`,
-                      width:'1'
-                  }
-              },
-              }
             ],
             series: [{
                 name: '水量',
                 type: 'bar',
                 barWidth : '30%',
                 itemStyle: {
-                   normal : {
-                    color: '#409EFF'
-                   }
-                },
-                data: [10,11,10,12,9]
-              },
-              {
-                name: '流量',
-                type: 'line',
-                itemStyle: {
                     normal : {
-                     color: '#50E3C2'
+                     color: '#409EFF'
                     }
-                },
-                data: [8,9,6,7,8]
-              },
-              {
-                name: '调令流量',
-                type: 'line',
-                itemStyle: {
-                    normal : {
-                     color: '#E6A23C'
-                    }
-                },
-                lineStyle: {
-                  type: 'dashed'
-                },
-                yAxisIndex: 1,
-                data: [7,8,5,6,7]
+                 },
+                data:yArr
               }
             ]
           };
-
           this.setState({
             chartOption : option
         });

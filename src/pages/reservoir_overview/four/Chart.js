@@ -35,6 +35,15 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
+    static propTypes = {
+        dataList :PropTypes.array
+      }
+    
+    static defaultProps = {
+        dataList : []
+    }
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -42,27 +51,21 @@ class Page extends Component {
         };
     }
 
-    componentDidMount() {
-        this.initChartOption();
+    componentWillReceiveProps(nextProps) {
+        const {dataList} = nextProps;
+        this.initChartOption(dataList);
     }
 
-    initChartOption = () => {
-        let _this = this;
-        let dataList = [
-            {value: 20,name: '细鳞斜颌鲴' },
-            {value: 20,name: '黄颡鱼'},
-            {value: 136,name: '团头鲂'},
-            {value: 7,name: '银鲴'},
-            {value: 16,name: '中华倒刺鲃' },
-            {value: 2,name: '未知鱼种0'},
-            {value: 30,name: '鳙'},
-            {value: 1,name: '未知鱼种2'},
-            {value: 9,name: '青鱼' },
-            {value: 16,name: '鲢'},
-            {value: 118,name: '长春鳊'},
-            {value: 14,name: '草鱼'}
-        ];
-
+   
+    initChartOption = (arr) => {
+        let dataList = [];
+        arr.forEach((item) => {
+            dataList.push({
+                name : item.fishName,
+                value : item.fishTotal
+            });
+        });
+        
         let option = {
             tooltip: {
                 trigger: 'item',

@@ -36,6 +36,15 @@ const styles = StyleSheet.create({
 });
 
 class Page extends Component {
+    static propTypes = {
+        dataList :PropTypes.array
+      }
+    
+    static defaultProps = {
+        dataList : []
+    }
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -43,12 +52,19 @@ class Page extends Component {
         };
     }
 
-    componentDidMount() {
-        this.initChartOption();
+    componentWillReceiveProps(nextProps) {
+        const {dataList} = nextProps;
+        this.initChartOption(dataList);
     }
-    
-    initChartOption = () => {
-        let _this = this;
+
+    initChartOption = (arr) => {
+        let tmArr = [];
+        let dataArr = [];
+        arr.forEach((item) => {
+            tmArr.push(item.month);
+            dataArr.push(item.total);
+        });
+
         let option  = {
             color: ['#3398DB'],
             tooltip: {
@@ -67,7 +83,7 @@ class Page extends Component {
             xAxis: [
                 {
                     type: 'category',
-                    data: ['2020.1', '2020.2', '2020.3', '2020.4', '2020.5', '2020.6', '2020.7'],
+                    data: tmArr,
                     axisTick: {
                         alignWithLabel: true
                     }
@@ -97,7 +113,7 @@ class Page extends Component {
                     name: '地震次数',
                     type: 'bar',
                     barWidth: '60%',
-                    data: [1, 2, 1, 3, 2, 2, 3],
+                    data: dataArr,
                     itemStyle: {
                         normal: {
                             label: {

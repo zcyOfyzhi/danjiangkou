@@ -5,14 +5,17 @@ import {
   StyleSheet, 
   NativeModules,
   Image,
-  Text
+  Text,
+  DeviceEventEmitter
 } from 'react-native';
-import { ButtonView, TextView } from '@rich/react-native-richway-component';
+import { ButtonView, TextView,StatusView } from '@rich/react-native-richway-component';
 import { Actionsheet} from 'beeshell';
 import Icon from 'react-native-vector-icons/Ionicons';
 import BaseStyle from '../../../css/BaseStyle';
 import Chart from './Chart.js';
-
+import HttpUtils from '../../../common/HttpUtils';
+import Service from '../../../base/Service';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,33 +102,90 @@ export default class Page extends Component {
 
     this.state = {
       color : ['#409EFF', '#FF5050', '#FFC30F', '#67C23A'],
-      dataList : [
-        {value: 69,name: '无问题' },
-        {value: 12,name: '有问题'},
-        {value: 10,name: '待处理'},
-        {value: 9,name: '已处理'}
-      ]
+      year : '',
+      dataList : [],
+      resData : []
     }
   }
 
+  componentDidMount(){
+    this.initYearOptions();
+  }
+  
+  initYearOptions = () => {
+    let nowYear = moment().format('YYYY');
+    let startYear = '2014';
+    let arr = [];
+    for(let index = 0; index <= nowYear-startYear; index++){
+      arr.push({
+          label : Number(startYear) + index + '',
+          value : Number(startYear) + index + ''
+      });
+    }
+    this.setState({
+      dataList : arr,
+      year : nowYear
+    });
+  }
+
+  getParams = () => {
+    let params = {
+      year : this.state.year || moment().format('YYYY'),
+      page : 1,
+      rows : 12
+    }
+    return params;
+  }
+
+  dealResData = (data) => {
+     let dataList = [
+      {tm : 11,value : ''},
+      {tm : 12,value : ''},
+      {tm : 1,value : ''},
+      {tm : 2,value : ''},
+      {tm : 3,value : ''},
+      {tm : 4,value : ''},
+      {tm : 5,value : ''},
+      {tm : 6,value : ''},
+      {tm : 7,value : ''},
+      {tm : 8,value : ''},
+      {tm : 9,value : ''},
+      {tm : 10,value : ''},
+    ];
+    
+    data.forEach(item => {
+      dataList.forEach(sitem => {
+          if(sitem.tm === item.month){
+            sitem.value = item.monthAmount;
+        }
+      });
+    });
+
+    this.setState({
+      resData : dataList
+    });
+    
+    DeviceEventEmitter.emit('waterNumFourData',dataList);
+    
+  }
   btnOneClick = () => {
     this._actionStSheet.open()
   }
 
 
     render() {
-      const {color,dataList} = this.state;
+      const {color,dataList,resData,year} = this.state;
       return (
         <View style={styles.container}>
           
           <View style={styles.top}>
-              <TextView style={styles.BgTitle}>供水曲线图</TextView>
+              <TextView style={styles.BgTitle}>水量确认单</TextView>
               <View style={styles.topRight}>
                   <ButtonView
                       style={styles.btnList}
                       onPress={this.btnOneClick}
                   >
-                    <TextView style={{color:'#89AADB',}}>请选择测站</TextView>
+                    <TextView style={{color:'#89AADB',}}>{year}</TextView>
                     <Icon
                         name={'ios-arrow-down'}
                         size={18}
@@ -136,9 +196,22 @@ export default class Page extends Component {
               </View>
           </View>
 
+          
+
           <View style={styles.main}>
             <View style={styles.mainTop}>
+                <StatusView
+                  ref={(v) => {
+                    this.custom = v;
+                  }}
+                  getData={params => HttpUtils.get(Service.GetWaterSumList, params)}
+                  params={this.getParams()}
+                  callBack={this.dealResData}
+                  errorFunc={() => this.setState({ enableButton: true })}
+                >
+
               <Chart></Chart>
+              </StatusView>
             </View>
             
 
@@ -146,29 +219,15 @@ export default class Page extends Component {
 
           <Actionsheet
                   ref={(c) => { this._actionStSheet = c; }}
-                  header='测站列表'
+                  header='年份'
                   maxShowNum = '4'
-                  data={[
-                    {
-                      label: '测站1',
-                      value: 'st1'
-                    },
-                    {
-                      label: '测站2',
-                      value: 'st2',
-                    },
-                    {
-                      label: '测站3',
-                      value: 'st3',
-                    },
-                    {
-                      label: '测站4',
-                      value: 'st4',
-                    }
-                  ]}
+                  data={dataList}
                   cancelable={false}
                   onPressConfirm={(item) => {
-                     console.log(item);
+                    this.setState({
+                      year : item.value
+                    })
+                    this.custom.reload();
                   }} 
                   onPressCancel={() => {
                     console.log('cancel')

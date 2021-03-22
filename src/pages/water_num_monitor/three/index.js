@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {
-    View, StyleSheet, FlatList
+    View, 
+    StyleSheet, 
+    FlatList,
+    DeviceEventEmitter
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { withNavigation } from 'react-navigation';
@@ -54,95 +57,84 @@ const styles = StyleSheet.create({
     }
 });
 
-class Page extends Component {
-    static propTypes = {
-        navigation: PropTypes.object,
-        data: PropTypes.array
-    }
-    static defaultProps = {
-        data: [
-            {
-                id : 1,
-                stnm : '站点1',
-                cLevel : 'III类',
-                tm : '6月1日',
-                tLevel : 'I类'
-            },
-            {
-                id : 2,
-                stnm : '站点2',
-                cLevel : 'III类',
-                tm : '6月1日',
-                tLevel : 'I类'
-            },
-            {
-                id : 3,
-                stnm : '站点3',
-                cLevel : 'III类',
-                tm : '6月1日',
-                tLevel : 'I类'
-            },
-            {
-                id : 4,
-                stnm : '站点4',
-                cLevel : 'III类',
-                tm : '6月1日',
-                tLevel : 'I类'
+export default class Page extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data : [],
+            title: {
+                tm: `时间`,
+                flow: `日平均流量（m³/s）`,
+                amount: `日供水量（百万m³）`,
+                upZ: `闸前水位`,
+                downZ: `闸后水位`
             }
-        ],
-        navigation: {},
-    }
-
-    state = {
-        title: {
-            tm: `日`,
-            stnm: `站名`,
-            cLevel: `当前水质`,
-            tLevel: `目标水质`
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        const {data} = nextProps;
-        this.setState({
-            data
+    componentDidMount(){
+        this.listener = DeviceEventEmitter.addListener('waterNumData', (data) => {
+            this.setState({
+               data : data.zhglWatersupAdjustedFlows
+           });
         });
-    }
+      }
+    
+      componentWillUnmount(){
+        this.listener.remove();
+      }
 
     renderItem = ({item}) => {
         const element = this.setItem(item,false);
         return element;
     }
 
-  
+    formatTm = (tm,isHeader) =>{
+        if(isHeader){
+            return tm
+        }
+        return moment(tm).format('MM月DD日');
+    }
+
+    formatNumber = (str,isHeader) => {
+        if(isHeader){
+            return str;
+        }
+        if(!str){
+          return '--';
+        }
+        return Number(str).toFixed(2);
+    }
 
     setItem = (item,isHeader) => {
-        const { navigation } = this.props;
-       
         let arr = [];
         arr.push(
-           <View style={[styles.border,{backgroundColor : isHeader ? '#F7F7F7' : '#fff'}]}>
+           <View style={[styles.border,{backgroundColor : isHeader ? '#F7F7F7' : '#fff',height : isHeader ? 55 : 35}]}>
                 <ButtonView
-                    style={styles.sitem}
+                    style={[styles.sitem,{height : isHeader ? 50 : 30}]}
                     key={item.id}
                     onPress={() => {
                          
                     }}
                 >
                     <View style={styles.item}>
-                        <TextView><TextView>{item.stnm}</TextView></TextView>
+                        <TextView><TextView>{this.formatTm(item.tm,isHeader)}</TextView></TextView>
                     </View>
 
                     <View style={styles.item}>
-                        <TextView>{item.cLevel}</TextView>
+                        <TextView>{this.formatNumber(item.flow,isHeader)}</TextView>
                     </View>
                     
-                    <View style={styles.itemTm}>
-                        <TextView>{item.tm}</TextView>
+                    <View style={styles.item}>
+                        <TextView>{this.formatNumber(item.amount,isHeader)}</TextView>
                     </View>
 
                     <View style={styles.item}>
-                        <TextView>{item.tLevel}</TextView>
+                        <TextView>{this.formatNumber(item.upZ,isHeader)}</TextView>
+                    </View>
+
+                    <View style={styles.item}>
+                        <TextView>{this.formatNumber(item.downZ,isHeader)}</TextView>
                     </View>
                 </ButtonView>
             </View>
@@ -175,5 +167,3 @@ class Page extends Component {
         );
     }
 }
-
-export default withNavigation(Page);

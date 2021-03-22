@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import {
-    StyleSheet, processColor, View
+    StyleSheet, 
+    processColor, 
+    View,
+    DeviceEventEmitter
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Echarts from 'native-echarts';
@@ -41,20 +44,28 @@ class Page extends Component {
             chartOption : {}
         };
     }
+    
+    componentDidMount(){
+        this.chartQualityListener = DeviceEventEmitter.addListener('waterQualityData', (data) => {
+            this.initChartOption(data);
+        });
+      }
+    
+      componentWillUnmount(){
+        this.chartQualityListener.remove();
+      }
 
-    componentDidMount() {
-        this.initChartOption();
-    }
 
-    initChartOption = () => {
-        let dataList = [
-            {value: 7,name: 'I类水' },
-            {value: 6,name: 'II类水'},
-            {value: 5,name: 'III类水'},
-            {value: 4,name: 'IV类水'},
-            {value: 2,name: 'V类水' },
-            {value: 1,name: '劣V类水'}
-        ];
+
+    initChartOption = (arr) => {
+        // let dataList = [
+        //     {value: 7,name: 'I类水' },
+        //     {value: 6,name: 'II类水'},
+        //     {value: 5,name: 'III类水'},
+        //     {value: 4,name: 'IV类水'},
+        //     {value: 2,name: 'V类水' },
+        //     {value: 1,name: '劣V类水'}
+        // ];
 
         let option = {
             tooltip: {
@@ -81,7 +92,7 @@ class Page extends Component {
                       show: true
                     }
                 },
-                data: dataList
+                data: arr
             }]
         };
 

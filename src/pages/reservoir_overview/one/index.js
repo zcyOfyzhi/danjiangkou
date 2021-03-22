@@ -6,9 +6,11 @@ import {
   NativeModules,
   Image
 } from 'react-native';
-import { ButtonView, TextView } from '@rich/react-native-richway-component';
+import { ButtonView, TextView,StatusView } from '@rich/react-native-richway-component';
 import BaseStyle from '../../../css/BaseStyle';
 import Chart from './Chart.js';
+import HttpUtils from '../../../common/HttpUtils';
+import Service from '../../../base/Service';
 
 
 const styles = StyleSheet.create({
@@ -89,13 +91,22 @@ export default class Page extends Component {
 
     this.state = {
       color : ['#409EFF', '#FF5050', '#FFC30F', '#67C23A'],
-      dataList : [
-        {value: 69,name: '无问题' },
-        {value: 12,name: '有问题'},
-        {value: 10,name: '待处理'},
-        {value: 9,name: '已处理'}
-      ]
+      dataList : []
     }
+  }
+
+  dealResData = (data) => {
+    let arr = [];
+    data.forEach((item) => {
+      arr.push({
+          value: item.total, 
+          name: item.spotStatusName
+      });
+    });
+
+    this.setState({
+      dataList : arr
+    });
   }
 
 
@@ -107,10 +118,19 @@ export default class Page extends Component {
           <View style={styles.subTitle}>
               <TextView style={{fontSize : 16,color : '#303133'}}>当前状态统计</TextView>
           </View>
+
+          <StatusView
+                  ref={(v) => {
+                    this.custom = v;
+                  }}
+                  getData={params => HttpUtils.get(Service.GetSplotInfoList, params)}
+                  callBack={this.dealResData}
+                  errorFunc={() => this.setState({ enableButton: true })}
+                >
           
           <View style={styles.main}>
             <View style={styles.top}>
-              <Chart></Chart>
+              <Chart dataList={dataList}></Chart>
             </View>
             <View style={styles.bottom}>
                 {
@@ -130,7 +150,7 @@ export default class Page extends Component {
             </View>
 
           </View>
-
+        </StatusView>
         </View>
       );
     }
